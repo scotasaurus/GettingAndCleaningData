@@ -7,7 +7,7 @@
 ## This file merges both test and training datasets and returns the mean values
 ## for a number of measurements for each activity as defined in the included
 ## readme and Codebook. Please refer to those files for more information.
-## Call getData from the working directory that contains the dataset
+## Call getData or createTidyData from the working directory that contains the dataset
 ## in order to retrieve the information in the defined format.
 
 ## Extracts a dataset from the filepath and filename defined in filename.
@@ -86,7 +86,16 @@ getData <- function() {
   trainData <- gatherDataFromSubfolder("train")
   
   ## Merge our test and train datasets
-  mergedData <- rbind(testData, trainData)
+  mergedData <- rbind(testData, trainData) 
+  
+  mergedData
+}
+
+## Creates a tidy data set on the above data and writes it out to 
+## a file named tidyData.txt
+createTidyData <- function() {
+  mergedData <- getData()  
+
   ## Convert our data to have a single variable observation per row
   mergedDataNames <- names(mergedData)
   lengthNames <- length(mergedDataNames)
@@ -94,6 +103,8 @@ getData <- function() {
  
   ## Calculate the mean of each variable grouped by Subject and Activity
   meanData <- ddply(longData, .(SubjectId, ActivityName, Measurement), summarize, Mean = (mean(value)))
+  
+  write.table(meanData, file="tidyData.txt", row.name=FALSE)
   
   meanData
 }
